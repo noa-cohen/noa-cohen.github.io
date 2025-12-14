@@ -1,0 +1,305 @@
+<!doctype html>
+<html>
+<head>
+	<title>MineTheGap</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+	<link rel="shortcut icon" type="image/x-icon" href="resources/favicon.ico">
+  	<link href="style.css" rel="stylesheet" type="text/css">
+	<meta property="og:title" content="MineTheGap: Automatic Mining of Biases in Text-to-Image Models" />
+	<meta property="og:description" content="An automatic method for mining prompts that cause the TTI model to generate biased outputs, targeting open-set and specific biases." />
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+	<script src="https://kit.fontawesome.com/ad96f96272.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+	
+	<!-- navigation bar on the top, nav bar stick to the top -->
+	<nav id="navbar_top" class="navbar sticky-top navbar-expand-lg navbar-dark bg-primary" style="margin-bottom: 15px;">
+		<div class="container">
+				<a class="navbar-brand" href="">MineTheGap</a>
+			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main_nav">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="main_nav">
+			<ul class="navbar-nav ms-auto">
+				<li class="nav-item"><a class="nav-link" href="#mined_prompts">Mined Prompts</a></li>
+				<li class="nav-item"><a class="nav-link" href="#overview">Method Overview</a></li>
+				<li class="nav-item"><a class="nav-link" href="#score">Bias Score</a></li>
+				<li class="nav-item"><a class="nav-link" href="#bibtex">Bibtex</a></li>
+			</ul>
+			</div> 
+		</div> 
+		</nav>
+	<!-- end nav bar -->
+
+	<div class="container-xl"> 
+		<!-- top button -->
+		<button type="button" class="btn btn-danger btn-floating btn-lg" id="btn-back-to-top">
+			<i class="fas fa-arrow-up"></i>
+		</button>
+		<!-- end top button -->
+
+		<!-- top - author names, affiliation and links -->
+		<center>
+			<h1>MineTheGap: Automatic Mining of Biases in Text-to-Image Models</h1>
+			<div class="container">
+				<div class="row justify-content-md-center">
+					<div class="col-md-auto">
+						<span style="font-size:24px"><a href="https://www.linkedin.com/in/noa-cohen1/" target="_blank" rel="noopener noreferrer">Noa Cohen</a></span>
+					</div>
+					<div class="col-md-auto">
+						<span style="font-size:24px"><a href="https://www.linkedin.com/in/nurit-spingarn" target="_blank" rel="noopener noreferrer">Nurit Spingarn</a></span>
+					</div>
+					<div class="col-md-auto">
+						<span style="font-size:24px"><a href="https://inbarhub.github.io/www/" target="_blank" rel="noopener noreferrer">Inbar Huberman-Spiegelglas</a></span>
+					</div>
+					<div class="col-md-auto">
+						<span style="font-size:24px"><a href="https://tomer.net.technion.ac.il/" target="_blank" rel="noopener noreferrer">Tomer Michaeli</a></span>
+					</div>
+				</div>
+				<p class="text-center affilation" style="font-size: 15pt;">Technion – Israel Institute of Technology<p>
+			</div>
+			
+
+			<div class="container">
+				<div class="row justify-content-md-center">
+					<div class="col-md-auto">
+						<span style="font-size:24px"><a class="btn btn-outline-primary" href='#' role="button"><i class="ai ai-arxiv"></i> Arxiv</a></span>
+					</div>
+					<div class="col-md-auto">
+						<span style="font-size:24px"><a class="btn btn-outline-primary" href="#" target="_blank" rel="noopener noreferrer"><i class="fab fa-github"></i> Code - coming soon</a></span>
+					</div>
+				</div>
+			</div>
+		<br>
+		</center>
+		<!-- end top -->
+
+		<!-- abstract -->
+		<p>
+			Text-to-Image (TTI) models generate images based on text prompts, which often leave certain aspects of the desired image ambiguous. When faced with these ambiguities, TTI models have been shown to exhibit biases in their interpretations. These biases can have societal impacts, e.g., when showing only a certain race for a stated occupation. They can also affect user experience when creating redundancy within a set of generated images instead of spanning diverse possibilities.
+			Here, we introduce MineTheGap – a method for automatically mining prompts that cause a TTI model to generate biased outputs. Our method goes beyond merely detecting bias for a given prompt. Rather, it leverages a genetic algorithm to iteratively refine a pool of prompts, seeking those that expose biases. This optimization process is driven by a novel bias score, which ranks biases according to their severity, as we validate on a dataset with known biases. For a given prompt, this score is obtained by comparing the distribution of generated images to the distribution of LLM-generated texts that constitute variations on the prompt.
+		</p>
+		<!-- end abstract -->
+
+		<!-- Mined Prompts -->
+		<hr id="mined_prompts">
+		<center><h1 class="burger_h1">Mined Prompts</h1></center>
+		<center><h2 class="burger_h1 mt-0">Mining open-set biases</h2></center>
+		<!-- arrows carousel -->
+		<div class="container">
+			<div class="row justify-content-md-center">
+			<div class="col-sm" style="max-width: 950px;">
+				<center>
+					<div id="myCarousel" class="carousel" data-ride="carousel" data-interval="false">
+						<ol class="carousel-indicators">
+						<li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+						<li data-target="#myCarousel" data-slide-to="1"></li>
+						<li data-target="#myCarousel" data-slide-to="2"></li>
+						<li data-target="#myCarousel" data-slide-to="3"></li>
+						</ol>
+						<div class="carousel-inner">
+						<div class="carousel-item active" >
+							<div class="d-none d-md-block text-center pt-3">
+								<p>TTI Model: Flux.1 Schnell</p>
+							</div>
+							<img class="d-block" src="./resources/dog.PNG" style="max-width: 800px;">
+						</div>
+						<div class="carousel-item">
+							<div class="d-none d-md-block text-center pt-3">
+								<p>TTI Model: SD 3</p>
+							</div>
+							<img class="d-block" src="./resources/fern.PNG" style="max-width: 800px;">
+						</div>
+						<div class="carousel-item">
+							<div class="d-none d-md-block text-center pt-3">
+								<p>TTI Model: SD 2.1</p>
+							</div>
+							<img class="d-block" src="./resources/violets.PNG" style="max-width: 800px;">
+						</div>
+						<div class="carousel-item">
+							<div class="d-none d-md-block text-center pt-3">
+								<p>TTI Model: SD 1.4</p>
+							</div>
+							<img class="d-block" src="./resources/daisies.PNG" style="max-width: 800px;">
+						</div>
+						</div>
+						<a class="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">
+							<i class="fa-solid fa-circle-left fa-2xl left-arrow"></i>
+						<span class="sr-only">Previous</span>
+						</a>
+						<a class="carousel-control-next" href="#myCarousel" role="button" data-slide="next">
+							<i class="fa-solid fa-circle-right fa-2xl right-arrow"></i>
+						<span class="sr-only">Next</span>
+						</a>
+					</div>
+				</center>
+			</div>
+		</div>
+		<!-- end arrows carousel -->
+		<center><h2 class="burger_h1 mt-0">Mining specific biases</h2></center>
+		<!-- arrows carousel -->
+		<div class="container">
+			<div class="row justify-content-md-center">
+			<div class="col-sm" style="max-width: 950px;">
+				<center>
+					<div id="myCarousel2" class="carousel" data-ride="carousel" data-interval="false">
+						<ol class="carousel-indicators">
+						<li data-target="#myCarousel2" data-slide-to="0" class="active"></li>
+						<li data-target="#myCarousel2" data-slide-to="1"></li>
+						<li data-target="#myCarousel2" data-slide-to="2"></li>
+						<li data-target="#myCarousel2" data-slide-to="3"></li>
+						<li data-target="#myCarousel2" data-slide-to="4"></li>
+						<li data-target="#myCarousel2" data-slide-to="5"></li>
+						<li data-target="#myCarousel2" data-slide-to="6"></li>
+						</ol>
+						<div class="carousel-inner">
+						<div class="carousel-item active" >
+							<div class="d-none d-md-block text-center pt-3">
+								<h5>Mined bias: Socio-demographic</h5>
+								<p>TTI Model: SD 1.4</p>
+							</div>
+							<img class="d-block" src="./resources/bubbles.PNG" style="max-width: 800px;">
+						</div>
+						<div class="carousel-item">
+							<div class="d-none d-md-block text-center pt-3">
+								<h5>Mined bias: Socio-demographic</h5>
+								<p>TTI Model: SD 3</p>
+							</div>
+							<img class="d-block" src="./resources/firefighter.PNG" style="max-width: 800px;">
+						</div>
+						<div class="carousel-item">
+							<div class="d-none d-md-block text-center pt-3">
+								<h5>Mined bias: Socio-demographic</h5>
+								<p>TTI Model: Flux.1 Schnell</p>
+							</div>
+							<img class="d-block" src="./resources/scientist.PNG" style="max-width: 800px;">
+						</div>
+						<div class="carousel-item">
+							<div class="d-none d-md-block text-center pt-3">
+								<h5>Mined bias: Clothing</h5>
+								<p>TTI Model: Flux.1 Schnell</p>
+							</div>
+							<img class="d-block" src="./resources/coat.PNG" style="max-width: 800px;">
+						</div>
+						<div class="carousel-item">
+							<div class="d-none d-md-block text-center pt-3">
+								<h5>Mined bias: Clothing</h5>
+								<p>TTI Model: SD 3</p>
+							</div>
+							<img class="d-block" src="./resources/superhero.PNG" style="max-width: 800px;">
+						</div>
+						<div class="carousel-item">
+							<div class="d-none d-md-block text-center pt-3">
+								<h5>Mined bias: Food</h5>
+								<p>TTI Model: Flux.1 Schnell</p>
+							</div>
+							<img class="d-block" src="./resources/croissant.PNG" style="max-width: 800px;">
+						</div>
+						<div class="carousel-item">
+							<div class="d-none d-md-block text-center pt-3">
+								<h5>Mined bias: Style</h5>
+								<p>TTI Model: SD 1.4</p>
+							</div>
+							<img class="d-block" src="./resources/mountain.PNG" style="max-width: 800px;">
+						</div>
+						<div class="carousel-item">
+							<div class="d-none d-md-block text-center pt-3">
+								<h5>Mined bias: Objects</h5>
+								<p>TTI Model: Flux.1 Schnell</p>
+							</div>
+							<img class="d-block" src="./resources/sailboat.PNG" style="max-width: 800px;">
+						</div>
+						</div>
+						<a class="carousel-control-prev" href="#myCarousel2" role="button" data-slide="prev">
+							<i class="fa-solid fa-circle-left fa-2xl left-arrow"></i>
+						<span class="sr-only">Previous</span>
+						</a>
+						<a class="carousel-control-next" href="#myCarousel2" role="button" data-slide="next">
+							<i class="fa-solid fa-circle-right fa-2xl right-arrow"></i>
+						<span class="sr-only">Next</span>
+						</a>
+					</div>
+				</center>
+			</div>
+		</div>
+		<!-- end arrows carousel -->
+		</div>
+		<!-- end Mined Prompts -->
+
+		<!-- Overview -->
+		<hr id="overview">
+		<center><h1 class="burger_h1">Method Overview</h1></center>
+		<p>
+			MineTheGap is a genetic algorithm-based approach that optimizes over the high-dimensional discrete space of valid prompts for a TTI model.
+Since the space of prompts is non-differentiable, we formulate this as a gradient-free optimization problem, refining a population of candidate prompts through iterative selection and mutation, 
+while injecting random candidates to introduce genetic diversity into the population and allow the algorithm to explore more areas of the solution space.
+Our general framework for optimizing over prompts, illustrated in the animation below, is applicable to any objective, while for our goal we use it with our novel bias score which we describe next.
+		</p>
+		<center>
+			<div class="container">
+				<div class="row justify-content-md-center">
+					<div class="col-md-auto" style="padding: 1px;">
+						<img alt="pipeline" src="./resources/pipeline_animation.gif" style="max-width: 1200px; width: 100%;"/>
+					</div>
+				</div>
+			</div>
+		</center>
+		
+		<hr id="score">
+		<center><h1 class="burger_h1">Bias Score</h1></center>
+		<p>
+			To guide the selection process in our mining framework, we require a bias ranking function that assigns a score to each prompt that reflects the extent to which the TTI model exhibits bias when generating images for that prompt.
+			Here, we propose an efficient, fully automatic approach that does not require specifying the nature of the bias in advance and provides an interpretable ranking of prompts.
+			We overcome a key challenge in quantifying bias, which is determining the expected image distribution for a given prompt, by levraging an LLM to generate a set of diverse textual variations of the prompt. 
+			This set of variations explicitly models the different plausible meanings embedded within a single prompt, and is used as a reference for evaluating the TTI model’s outputs.
+		</p>
+		<center>
+			<div class="container">
+				<div class="row justify-content-md-center">
+					<div class="col-md-auto" style="padding: 1px;">
+						<img alt="bias score" src="./resources/metric_animation.gif" style="max-width: 800px; width: 100%;"/>
+					</div>
+				</div>
+			</div>
+		</center>
+		<!-- end Overview -->
+
+		<!-- bibtex citation -->
+		<hr id="bibtex">
+		<!-- <p class="section" id="bibtex"><b>Bibtex</b></p> -->
+		 <center><h2 style="margin-top: 50px; margin-bottom: 30px;">Bibtex</h2></center>
+		<pre class="command-copy"><div class="container"><div class="row"><div class="col" id="citation">TBD
+</div><div class="col text-end"><button type="button" class="btn btn-light" onclick="copyBib()" onmouseover="console.log('hover');"><i class="fa-regular fa-copy"></i></button></div></div></div></pre>
+		<!-- end bibtex citation -->
+
+		<hr>
+		<br>
+
+		<!-- acknowledgement -->
+		<div class="container">
+			<center>
+			<h4>Acknowledgements</h4>
+			<p style="font-size: 11pt;">
+				This webpage is based on the <a target="_blank" rel="noopener noreferrer" href="https://github.com/richzhang/webpage-template">academic webpage template</a>.<br>
+				Icons are taken from <a target="_blank" rel="noopener noreferrer" href="https://fontawesome.com/">Font Awesome</a> and <a target="_blank" rel="noopener noreferrer" href="https://jpswalsh.github.io/academicons/">Academicons</a>.<br>
+				<br>
+				</a>
+			</p>
+			</center>
+		</div>
+	<br>
+
+</div>
+
+<script src="functionality.js"></script>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</body>
+</html>
+

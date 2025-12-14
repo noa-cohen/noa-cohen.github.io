@@ -26,3 +26,8 @@ document.body.scrollTop = 0;
 document.documentElement.scrollTop = 0;
 }
 
+// Copy button
+function copyBib() {
+  let copyText = $("#citation")[0];
+  navigator.clipboard.writeText(copyText.getHTML());
+}
